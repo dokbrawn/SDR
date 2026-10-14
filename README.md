@@ -13,7 +13,6 @@
 | 4 | 29.09 | приём IQ-отсчётов | замеры RMS при 0 и 40 дБ, графики IQ | [Недели 4-6](Week_4-5-6/README.md#занятие-4-приём-iq-отсчётов-2909) |
 | 5 | 06.10 | проект на два Pluto | `pluto_tx`, `pluto_rx`, `loopback` | [Недели 4-6](Week_4-5-6/README.md#занятие-5-среда-и-проект-для-двух-pluto-0610) |
 | 6 | 13.10 | передача между двумя Pluto | импульсы на синусоиде | [Недели 4-6](Week_4-5-6/README.md#занятие-6-приём-и-передача-между-двумя-pluto-1310) |
-| - | - | - | трапециевидный сигнал | [Недели 4-6](Week_4-5-6/README.md#персональное-задание-трапеция) |
 
 ## Структура репозитория
 
@@ -28,7 +27,7 @@ scripts/       скрипты для графиков IQ
 | Файл | Назначение |
 |------|------------|
 | [`code/bazzite_main/main.c`](code/bazzite_main/main.c) | бинарь tx/rx для двух Pluto (занятие 6) |
-| [`code/reference_soapy_pluto_sdr_timestamp.c`](code/reference_soapy_pluto_sdr_timestamp.c) | пример преподавателя (sdrLessons) |
+| [`code/reference_soapy_pluto_sdr_timestamp.c`](code/reference_soapy_pluto_sdr_timestamp.c) | пример (шаблон) |
 | [`scripts/plot_final.py`](scripts/plot_final.py) | график I, Q и огибающей из `.pcm` |
 | [`scripts/plot_original.py`](scripts/plot_original.py) | исходный скрипт с yonote |
 
