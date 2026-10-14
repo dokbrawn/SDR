@@ -147,7 +147,7 @@ $$r[n] = g\,A\,(1 + j)\,e^{\,j 2\pi \Delta f\, n / F_s}, \qquad I[n] = \sqrt{2}\
 
 Сборка в контейнере `sdr-build`:
 ```
-g++ code/bazzite_main/main.c -o main $(pkg-config --cflags --libs SoapySDR) -lm
+g++ main.c -o main $(pkg-config --cflags --libs SoapySDR) -lm
 ```
 Два терминала (URI из `SoapySDRUtil --find`):
 ```
