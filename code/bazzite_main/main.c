@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
     const double sr = 1e6;
     size_t ch[] = {0};
     
-    // Настройка TX
     SoapySDRDevice_setSampleRate(sdr, SOAPY_SDR_TX, 0, sr);
     SoapySDRDevice_setFrequency(sdr, SOAPY_SDR_TX, 0, tx_freq, NULL);
     SoapySDRDevice_setBandwidth(sdr, SOAPY_SDR_TX, 0, 200e3);
@@ -53,7 +52,6 @@ int main(int argc, char *argv[])
     SoapySDRStream *txS = SoapySDRDevice_setupStream(sdr, SOAPY_SDR_TX, SOAPY_SDR_CS16, ch, 1, NULL);
     size_t tx_mtu = SoapySDRDevice_getStreamMTU(sdr, txS);
 
-    // Настройка RX
     SoapySDRDevice_setSampleRate(sdr, SOAPY_SDR_RX, 0, sr);
     SoapySDRDevice_setFrequency(sdr, SOAPY_SDR_RX, 0, rx_freq, NULL);
     SoapySDRDevice_setBandwidth(sdr, SOAPY_SDR_RX, 0, 200e3);
@@ -64,7 +62,6 @@ int main(int argc, char *argv[])
     int16_t *tx_buf = (int16_t*)malloc(2*tx_mtu*sizeof(int16_t));
     int16_t *rx_buf = (int16_t*)malloc(2*rx_mtu*sizeof(int16_t));
 
-    // ГЕНЕРАЦИЯ КОНСТАНТЫ (Прямоугольный импульс в базеbandе)
     const int16_t dc_val = 8000; 
     for(size_t i=0; i<tx_mtu; i++) { tx_buf[2*i]=dc_val; tx_buf[2*i+1]=dc_val; }
 
