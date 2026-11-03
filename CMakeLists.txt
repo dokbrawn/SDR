@@ -15,10 +15,7 @@ endif()
 add_executable(pluto_link src/main.c)
 target_compile_options(pluto_link PRIVATE -Wall -Wextra)
 
-# --- SoapySDR ---
-# Основной путь — pkg-config: проект на C, а импортированная цель из SoapySDRConfig
-# тащит C++-флаги (например -Wnon-virtual-dtor), которые cc1 не понимает.
-# find_package оставлен как fallback для систем, где .pc-файла нет.
+
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
     pkg_check_modules(SOAPY_PC QUIET SoapySDR)
