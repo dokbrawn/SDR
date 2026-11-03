@@ -99,7 +99,7 @@ python3 scripts/rx_offline.py --selftest              # самопроверка
 | 5 | 06.10 | проект на два Pluto | `pluto_tx`, `pluto_rx`, `loopback` | [reports/lesson-04-06…](reports/lesson-04-06-iq-and-dual-pluto/README.md#занятие-5-среда-и-проект-для-двух-pluto-0610) |
 | 6 | 13.10 | передача между двумя Pluto | IQ-запись 81 млн отсчётов, разбор биений | [reports/lesson-04-06…](reports/lesson-04-06-iq-and-dual-pluto/README.md#занятие-6-приём-и-передача-между-двумя-pluto-1310) |
 | 7 | 20.10 | приём-передача на 2 SDR, подготовка к цифре | тот же тракт, переход к файловому TX | [reports/lesson-07-08…](reports/lesson-07-08-tx-qpsk-shaping/README.md) |
-| 8 | 27.10 | передатчик: биты → QPSK → upsampling → свёртка → TX | кадр передан и принят; созвездие (круг + квадрат) — как и ожидается без частотной синхронизации | [reports/lesson-07-08…](reports/lesson-07-08-tx-qpsk-shaping/README.md) |
+| 8 | 27.10 | передатчик: биты → QPSK → upsampling → свёртка → TX | кадр передан и принят; созвездие | [reports/lesson-07-08…](reports/lesson-07-08-tx-qpsk-shaping/README.md) |
 | 9 | 03.11 | приёмник: фильтрация, синхронизация, демодуляция | занятие ещё не было; офлайн-приёмник готов: [scripts/README.md](scripts/README.md) | отчёт будет после занятия |
 
 Прогресс по неделям и «что не получилось» — в [CHANGELOG.md](CHANGELOG.md).
