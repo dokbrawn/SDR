@@ -12,7 +12,8 @@ reports/
 ├── lesson-01-02-fm-and-waterfall/         занятия 1–2, 08.09 и 15.09 (GNU Radio)
 ├── lesson-03-soapy-libiio/                занятие 3, 22.09 (SoapySDR, libiio)
 ├── lesson-04-06-iq-and-dual-pluto/        занятия 4–6, 29.09 / 06.10 / 13.10
-└── lesson-07-08-tx-qpsk-shaping/          занятия 7–8, 20.10 / 27.10 (TX: QPSK, свёртка)
+├── lesson-07-08-tx-qpsk-shaping/          занятия 7–8, 20.10 / 27.10 (TX: QPSK, свёртка)
+└── lesson-09-12-receiver-gui/             занятия 9–12, 03.11 – 24.11 (приёмник, синхронизация, окно, маркер)
 ```
 
 Именование каталога: `lesson-NN[-MM]-короткая-тема`. Внутри — `README.md`, чтобы GitHub

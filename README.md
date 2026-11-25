@@ -27,33 +27,32 @@ SoapyPlutoSDR (ветка `sdr_gadget_timestamping`), CMake, Python 3 (numpy, ma
 ```
 .
 ├── README.md                  этот файл
-├── BUILD.md                   установка зависимостей, сборка, запуск, типовые ошибки
+├── BUILD.md                   зависимости, сборка, запуск, типовые ошибки
 ├── CHANGELOG.md               что сделано по неделям: получилось / не получилось / дальше
-├── CMakeLists.txt             сборка src/main.c → build/pluto_link
-├── LICENSE
-├── reports/                   ОТЧЁТЫ по занятиям (одно занятие = один файл)
-│   ├── README.md              как устроены отчёты и по какому шаблону пишутся
+├── CMakeLists.txt             цели: pluto_link, pluto_gui, dsp_tests
+├── .gitignore                 build/, *.pcm и прочий мусор не коммитим
+├── reports/                   ОТЧЁТЫ по занятиям (одно занятие или группа = одна папка)
+│   ├── README.md              как устроены отчёты
 │   ├── TEMPLATE.md            шаблон отчёта
-│   ├── assets/                скриншоты и графики, на которые ссылаются отчёты
-│   ├── lesson-01-02-fm-and-waterfall/README.md
-│   ├── lesson-03-soapy-libiio/README.md
-│   ├── lesson-04-06-iq-and-dual-pluto/README.md
-│   └── lesson-07-08-tx-qpsk-shaping/README.md
+│   ├── assets/                скриншоты и графики
+│   ├── lesson-01-02-fm-and-waterfall/
+│   ├── lesson-03-soapy-libiio/
+│   ├── lesson-04-06-iq-and-dual-pluto/
+│   ├── lesson-07-08-tx-qpsk-shaping/
+│   └── lesson-09-12-receiver-gui/
 ├── src/
-│   ├── README.md              что за программа, аргументы, режимы, параметры
-│   └── main.c                 полнодуплексный TX/RX для двух Pluto (SoapySDR, CS16),
-│                              tx читает кадр из файла tx_name.pcm
-├── scripts/
-│   ├── README.md              цепочка обработки rx_offline и проверки
-│   ├── sdr_common.py          общий код TX/RX: Gray-QPSK, преамбула, фильтры, CS16
-│   ├── gen_tx_name.py         текст -> кадр -> tx_name.pcm
-│   ├── rx_offline.py          офлайн-приёмник: sync, созвездие, decode, --selftest
-│   ├── plot_iq.py             график I, Q и огибающей из .pcm (окно, savefig)
-│   ├── plot_original.py       первая версия скрипта (занятие 4), оставлена как есть
-│   └── lesson08/              снапшот кода занятия 8, не редактируется
-└── examples/
-    ├── README.md              зачем пример и как его собрать
-    └── soapy_pluto_sdr_timestamp.c   минимальный пример SoapySDR + Pluto (копия, занятие 3)
+│   ├── README.md              устройство программ и приёмника
+│   ├── main.c                 TX/RX для двух Pluto (SoapySDR, CS16), цель pluto_link
+│   ├── backend.h, backend.cpp приёмник: DC, поиск пакета, частота, тактовая синхронизация, маркер, декодер
+│   ├── timing.h               петля тактовой синхронизации (ZC, Гарднер, Мюллер и Мюллер)
+│   └── gui.cpp                окно приёмника на ImGui + ImPlot + SDL2, цель pluto_gui
+├── tests/
+│   └── test_dsp.cpp           тесты приёмника на синтетическом сигнале, цель dsp_tests
+├── data/
+│   └── clean_real_burst.h     запись одного реального всплеска (2040 отсчётов)
+├── scripts/                   Python: офлайн-приёмник и графики занятий 4–8
+├── examples/                  минимальный пример SoapySDR (занятие 3)
+└── thirdparty/                сабмодули: SoapyPlutoSDR, SoapySDR, libiio, libad9361-iio, imgui, implot
 ```
 
 ## Быстрый старт
@@ -61,32 +60,24 @@ SoapyPlutoSDR (ветка `sdr_gadget_timestamping`), CMake, Python 3 (numpy, ma
 Полная инструкция — в [BUILD.md](BUILD.md). Коротко:
 
 ```bash
-# 1. clone
-git clone https://github.com/dokbrawn/SDR.git
+git clone --recurse-submodules https://github.com/dokbrawn/SDR.git
 cd SDR
 
-# 2. зависимости (SoapySDR, libiio, libad9361-iio, SoapyPlutoSDR) — см. BUILD.md
-#    проверка, что драйвер Pluto виден:
-SoapySDRUtil --find
-
-# 3. сборка (каталог build/ в git не попадает, он в .gitignore)
 cmake -S . -B build
 cmake --build build -j"$(nproc)"
+ctest --test-dir build
 
-# 4. запуск: две платы, два терминала, URI берём из вывода --find
-./build/pluto_link rx usb:3.4.5      # терминал 1 → пишет rx_from_800.pcm
-./build/pluto_link tx usb:3.5.5      # терминал 2 → пишет rx_from_840.pcm
-# остановка — Ctrl+C, файл закрывается и сохраняется
-
-# 5. графики и декодирование
-python3 scripts/plot_iq.py rx_from_800.pcm --save reports/assets/iq_rx800.png
-python3 scripts/gen_tx_name.py --name TIMUR          # подготовить кадр для tx
-python3 scripts/rx_offline.py rx_from_800.pcm decode  # офлайн-приёмник
-python3 scripts/rx_offline.py --selftest              # самопроверка тракта на синтетике
+./build/pluto_gui --sim
+./build/pluto_gui
+./build/pluto_gui --rx usb:3.4.5 --tx usb:3.5.5
 ```
 
-Исполняемый файл после сборки ровно один — `build/pluto_link` (цель CMake `pluto_link`).
-Режим работы задаётся первым аргументом (`tx` или `rx`), а не отдельными бинарями.
+- `pluto_gui --sim` — приёмник на встроенной симуляции, железо не нужно.
+- `pluto_gui` без аргументов сам находит платы, запускает `main` на приём и на передачу и рисует результат.
+- `pluto_link rx|tx <uri>` — отдельная программа записи IQ, как на занятиях 6–8.
+- `ctest` прогоняет 11 тестов приёмника.
+
+Каталог `build/` в git не попадает.
 
 ## Занятия
 
@@ -100,6 +91,9 @@ python3 scripts/rx_offline.py --selftest              # самопроверка
 | 6 | 13.10 | передача между двумя Pluto | IQ-запись 81 млн отсчётов, разбор биений | [reports/lesson-04-06…](reports/lesson-04-06-iq-and-dual-pluto/README.md#занятие-6-приём-и-передача-между-двумя-pluto-1310) |
 | 7 | 20.10 | приём-передача на 2 SDR, подготовка к цифре | тот же тракт, переход к файловому TX | [reports/lesson-07-08…](reports/lesson-07-08-tx-qpsk-shaping/README.md) |
 | 8 | 27.10 | передатчик: биты → QPSK → upsampling → свёртка → TX | кадр передан и принят; созвездие | [reports/lesson-07-08…](reports/lesson-07-08-tx-qpsk-shaping/README.md) |
-| 9 | 03.11 | приёмник: фильтрация, синхронизация, демодуляция | занятие ещё не было; офлайн-приёмник готов: [scripts/README.md](scripts/README.md) | отчёт будет после занятия |
+| 9 | 03.11 | приёмник: фильтрация, синхронизация, демодуляция | офлайн-приёмник на Python: [scripts/README.md](scripts/README.md) | [reports/lesson-09-12…](reports/lesson-09-12-receiver-gui/README.md) |
+| 10 | 10.11 | выбор символьных отсчётов, интерфейс ImGui | приёмник на C++ и окно с графиками | [reports/lesson-09-12…](reports/lesson-09-12-receiver-gui/README.md) |
+| 11 | 17.11 | символьная синхронизация, интерфейс | детекторы ZC и Гарднера, вкладка синхронизации | [reports/lesson-09-12…](reports/lesson-09-12-receiver-gui/README.md) |
+| 12 | 24.11 | схема Мюллера и Мюллера, синхропоследовательность | M&M, маркер Баркера-13, корреляционный поиск пакета | [reports/lesson-09-12…](reports/lesson-09-12-receiver-gui/README.md) |
 
 Прогресс по неделям и «что не получилось» — в [CHANGELOG.md](CHANGELOG.md).

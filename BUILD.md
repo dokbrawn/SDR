@@ -94,44 +94,85 @@ URI **меняется после переподключения** — пере�
 
 ## 3. Сборка проекта
 
+Для окна приёмника нужны SDL2, OpenGL и две библиотеки, подключённые как сабмодули:
+Dear ImGui и ImPlot.
+
+```bash
+sudo apt-get install -y libsdl2-dev libgl-dev libsoapysdr-dev
+git submodule update --init --recursive
+```
+
+Если сабмодулей `imgui` и `implot` в клоне ещё нет (первое добавление):
+
+```bash
+git submodule add https://github.com/ocornut/imgui.git thirdparty/imgui
+git submodule add https://github.com/epezent/implot.git thirdparty/implot
+git commit -m "Add imgui and implot submodules"
+```
+
+Проверено с ImGui 1.92 (23.11.2026) и ImPlot от 25.10.2026.
+
 ```bash
 cd SDR
 cmake -S . -B build
 cmake --build build -j"$(nproc)"
+ctest --test-dir build
 ```
 
-Результат — единственный исполняемый файл `build/pluto_link`.
+Что получается в `build/`:
 
-Каталог `build/` в git **не коммитится** (он в `.gitignore`): это генерируемый мусор,
-он не переносим между машинами и раздувает репозиторий. Коммитятся только исходники
-и `CMakeLists.txt`.
+| Файл | Что это |
+|---|---|
+| `pluto_link` | запись IQ с одной платы, режимы `rx` и `tx` |
+| `pluto_gui` | окно приёмника |
+| `main` | ссылка на `pluto_link`: `pluto_gui` ищет `main` рядом с собой (или в переменной `PLUTO_MAIN`) |
+| `dsp_tests` | тесты приёмника |
 
-Альтернатива без CMake (одной командой, так я собирал на занятии 6):
+Только запись IQ без окна: `cmake -S . -B build -DBUILD_GUI=OFF`.
+
+Каталог `build/` в git **не коммитится** (он в `.gitignore`).
+
+Без CMake:
 
 ```bash
 gcc src/main.c -o build/pluto_link $(pkg-config --cflags --libs SoapySDR) -lm
 ```
 
-### Требования к версии CMake
+### Требования
 
-`cmake_minimum_required(VERSION 3.16)`, C11. Зависимости: только SoapySDR
-(ищется через `find_package(SoapySDR CONFIG)`, fallback — `pkg-config`) и `libm`.
+CMake 3.16, C11, C++17. SoapySDR (`find_package`, запасной путь — `pkg-config`), для окна
+ещё SDL2, OpenGL, ImGui, ImPlot.
 
 ## 4. Запуск
 
-Два терминала, по одному на плату. Плата в режиме `rx` слушает 800 МГц и пишет
-`rx_from_800.pcm`; плата в режиме `tx` передаёт на 800 МГц, слушает 840 МГц и пишет
-`rx_from_840.pcm`.
+### Окно приёмника
 
 ```bash
-# терминал 1
-./build/pluto_link rx usb:3.4.5
-# терминал 2
-./build/pluto_link tx usb:3.5.5
+./build/pluto_gui --sim
+./build/pluto_gui
+./build/pluto_gui --rx usb:3.4.5 --tx usb:3.5.5
+./build/pluto_gui --swap
 ```
 
-Остановка — `Ctrl+C` (SIGINT): потоки деактивируются, файл закрывается, запись сохраняется.
-Каждые 100 буферов в stdout печатается номер буфера и RMS принятого сигнала.
+Без аргументов плата ищется через `SoapySDRUtil --find`. `--swap` меняет платы местами.
+Усиление приёма и передачи меняется в панели настроек (шестерёнка или клавиша `S`).
+Клавиши: `Пробел` пауза, `1`–`5` вкладки, `Esc` закрыть панель.
+
+### Запись IQ вручную
+
+Два терминала, по одному на плату:
+
+```bash
+./build/pluto_link rx usb:3.4.5 [gain_tx] [gain_rx]
+./build/pluto_link tx usb:3.5.5 [gain_tx] [gain_rx]
+```
+
+Плата `rx` слушает 800 МГц и пишет `rx_from_800.pcm`. Плата `tx` передаёт на 800 МГц, слушает
+840 МГц и пишет `rx_from_840.pcm`. Режим `tx` читает кадр из `tx_name.pcm` в текущей папке.
+Усиление: передача 0–89 дБ (по умолчанию 40), приём 0–73 дБ (по умолчанию 30).
+
+Остановка — `Ctrl+C`: потоки закрываются, запись сохраняется. Каждые 125 буферов печатается
+RMS, пик и доля клиппинга. Пик близко к 2048 значит, что приёмник перегружен и усиление надо снизить.
 
 ## 5. Обработка записи
 
