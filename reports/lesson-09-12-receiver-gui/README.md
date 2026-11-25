@@ -2,7 +2,6 @@
 
 **Стенд:** 2 × ADALM-Pluto, частота 1 МГц, 10 отсчётов на символ, TX 800 МГц / RX 840 МГц. Проверка без железа — режим `pluto_gui --sim`.
 **Код:** [`src/backend.cpp`](../../src/backend.cpp), [`src/timing.h`](../../src/timing.h), [`src/gui.cpp`](../../src/gui.cpp), [`tests/test_dsp.cpp`](../../tests/test_dsp.cpp)
-**Задание от преподавателя:** схема Мюллера и Мюллера (SDR4Engineers, гл. 6.4); добавить в пакет синхропоследовательность и искать по ней начало пакета.
 
 ---
 
