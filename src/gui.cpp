@@ -358,6 +358,7 @@ static void scene_time(Ui &u, ImVec2 avail) {
     ImPlotFlags pf = ImPlotFlags_NoTitle | ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoMouseText;
     if (ImPlot::BeginPlot("##tape", ImVec2(-1, -1), pf)) {
         ImPlot::SetupAxes("мс", "АЦП");
+        ImPlot::SetupAxisFormat(ImAxis_X1, "%.1f");
         ImPlot::SetupAxisLimits(ImAxis_X1, t_end - u.span_ms, t_end, u.follow ? ImPlotCond_Always : ImPlotCond_Once);
         ImPlot::SetupAxisLimits(ImAxis_Y1, -u.ym_s, u.ym_s, u.paused ? ImPlotCond_Once : ImPlotCond_Always);
         if (u.follow && ImPlot::IsPlotHovered() && (ImGui::IsMouseDragging(ImGuiMouseButton_Left) || ImGui::GetIO().MouseWheel != 0.f)) u.follow = false;
